@@ -10,11 +10,11 @@
 <title>Vocabulary Anagram</title>
 
 <!-- Javascript and Cascading Style Sheets (css) libraries -->
-<!-- mostly from content delivery networks                 -->
+<!-- mostly from content delivery networks				   -->
 
 <!-- jquery; CDN load is usually quick because it's likely cached -->
 <script type="text/javascript"
-     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+	 src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
 </script>
 
 <!-- Bootstrap stylesheet let's us have a 'responsive' layout; -->
@@ -34,7 +34,7 @@
  crossorigin="anonymous">
 </script>
 
-<!-- Our own css file.  Note how we can link directly here and not -->
+<!-- Our own css file.	Note how we can link directly here and not -->
 <!-- write any routing code in the Flask application. -->
 <link rel="stylesheet" href="/static/jumble.css" />
 
@@ -44,9 +44,9 @@
 <div class="container">
 
   <div class="row">
-    <div class="col-xs-6 text-center">
-      <h1>Words</h1>
-    </div>
+	<div class="col-xs-6 text-center">
+	  <h1>Words</h1>
+	</div>
   </div>
 <!-- Vocabularly words layed out in 6 columns;
   -- bootstrap may collapse to fewer columns and
@@ -54,11 +54,11 @@
   -->
 <div class="row">
   {% for word in g.vocab %}
-    <div class="col-xs-2 text-center"> {{ word }} </div>
-    {% if loop.index is divisibleby 3 %}
-    </div> <!-- row -->
-    <div class="row">
-    {% endif %}
+	<div class="col-xs-2 text-center"> {{ word }} </div>
+	{% if loop.index is divisibleby 3 %}
+	</div> <!-- row -->
+	<div class="row">
+	{% endif %}
   {% endfor %}
 </div> <!-- row -->
 
@@ -70,25 +70,26 @@
   </div>
   </div><div class="row">
   <div class="col-xs-6 text-center lead">
-    <strong>{{ session.jumble }}</strong>
+	<strong>{{ session.jumble }}</strong>
   </div>
   </div><div class="row">
   <div class="col-xs-6 text-center">
-    to spell {{session.target_count}} words from the list.
+	to spell {{session.target_count}} words from the list.
   </div> <!-- col -->
 </div> <!-- row -->
 <br />
 <div class="row">
   <div class="col-xs-6 text-center">
-  <form id="entry" method="POST" action="/_check">
-    <label for="attempt">Word:</label>
-    <input id="attempt" name="attempt" type="text" width="15"
-      autocomplete="off"  autofocus />
-    <input type="submit" name="try" />
+  <form id="entry" action="/_check">
+	<label for="attempt">Word:</label>
+	<input id="attempt" name="attempt" type="text" width="15"
+	  autocomplete="off"  autofocus />
   </form>
 </div></div>
 
 <br />
+
+
 
 {% if session.matches|length is not equalto 0  %}
 <h2>You found </h2>
@@ -102,14 +103,63 @@
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <!-- Mismatch, already found, etc. "flashed" from Python -->
-    {% for message in messages %}
-      <p class="message">{{ message }}</p>
-    {% endfor %}
+	<!-- Mismatch, already found, etc. "flashed" from Python -->
+	{% for message in messages %}
+	  <p class="message">{{ message }}</p>
+	{% endfor %}
   {% endif %}
 {% endwith %}
 
+<h3>Status:</h3>
+<p id="status"></p>
+<h4>Found Words:</h4>
+<p id ="found"></p>
 
+<script>
+
+// Suppress normal form submission
+$("#entry").submit( function(event) {
+   event.preventDefault();
+  });
+  
+// Use keyup to get every keystroke the user makes
+$("#attempt").keyup(function(event) {
+	var txt = $("#attempt").val();  // Current content of the input field
+	var keycode = event.which;	   // They key that just went up
+	var letter = String.fromCharCode(keycode);
+	if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return }
+	
+	// Pass each keystroke to check where it handles the input
+	$.getJSON( "/_check", { text: txt }, 
+              function(data) {
+                rsval = data.result.word;
+                match = data.result.matches;
+                console.log("rsval: " + rsval)
+                
+                // Tell the user when they found a word
+                if (rsval == "found"){
+              		$("#status").html("Found a word: " + txt);
+              		$("#found").append(txt + ", ")
+              		$("#attempt").val("");
+              	// Tell the user their word is not in the list of words
+              	} else if (rsval == "not found"){
+              		$("#status").html(txt + " isn't in the list of words");
+              	// Tell the user that their word cannot be made from the letters
+              	} else if (rsval == "unavailable"){
+              		$("#status").html(txt + " can't be made from the list of letters");
+              		$("#attempt").val("");
+              	// Tell the user that they already found a word
+              	} else if (rsval == "already found") {
+              		$("#status").html("You already found " + txt);
+              		$("#attempt").val("");
+              	// Tell the user that they found all the words
+              	} else if (rsval == "success"){
+              		$("#status").html("You found all the words!");
+              	}
+              	
+            })});
+              	
+</script>
 
  </div> <!-- container -->
 </body> </html>
