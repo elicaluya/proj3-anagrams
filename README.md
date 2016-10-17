@@ -16,21 +16,15 @@ have different anagrams.
 
 ## Authors 
 
-Initial version by M Young; to be revised by CIS 322 students. 
+Initial version by M Young;
+Revisions by Elijah Caluya
 
-## Status
+## Assignment
 
-flask_vocab.py and the template vocab.html are a 'skeleton' version 
-of the anagram game for a CIS 322 project.  They uses conventional  
-interaction through a form, interacting only when the user submits the form. 
-Your assignment is to replace the interaction with AJAX interaction on each 
-keystroke. 
-
-## Minijax? 
-
-flask_minijax.py and templates/minijax.html are a tiny example of using JQuery 
-with flask for an Ajax application.  They should not be included in the
-version of the project you turn in. 
+The program uses AJAX interaction to asses the information entered key by key.
+The program will check each keystroke the user makes and determines if it matches 
+any of the words in the Words column. If any letters the user enters are not in
+the jumbled letters, the user is prompted that the letter is not in the selection.
 
 
 ## To run automated tests 
